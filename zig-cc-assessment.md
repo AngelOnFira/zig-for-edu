@@ -1,16 +1,39 @@
 # Zig CC Assessment for Educational Use
 
+## Executive Summary
+
+This assessment evaluates `zig cc` as a teaching tool for C programming courses. Based on comprehensive testing of common student errors, here's what to expect:
+
+### Where Zig CC Excels ✅
+- **Runtime Error Messages**: Provides clear, detailed error messages for crashes that would normally just show "Segmentation fault"
+- **Integer Overflow Detection**: Catches overflow at runtime with exact values and line numbers
+- **Null Pointer Detection**: Explicitly identifies null pointer dereferences with code location
+- **Fix Suggestions**: Offers helpful suggestions for fixing uninitialized variable warnings
+
+### Where GCC Excels ✅
+- **Use-After-Free Warnings**: Better compile-time detection of memory-after-free errors
+- **Mature Tooling**: More established ecosystem and debugging tools
+- **Performance**: Potentially better optimization for production code
+
+### Quick Recommendation
+**For teaching C programming, Zig CC is highly recommended** due to its superior error messages that turn crashes into teachable moments.
+
+---
+
 ## Overview
 This document assesses the viability of using `zig cc` as a replacement for traditional C compilers in educational settings. The focus is on comparing compile-time and runtime error messages that students commonly encounter.
 
 ## Test Environment
-- Traditional Compiler: gcc
-- Alternative Compiler: zig cc
-- Test Date: 2025-07-08
+- **Traditional Compiler**: gcc version (system default)
+- **Alternative Compiler**: zig cc 
+- **Test Date**: 2025-07-08
+- **Platform**: Linux
+
+---
 
 ## Example 1: Integer Overflow
 
-### Source Code (example1.c)
+### 📝 Source Code (`example1.c`)
 ```c
 #include <stdio.h>
 #include <limits.h>
@@ -48,50 +71,50 @@ int main() {
 }
 ```
 
-### GCC Compilation
+### 🔨 GCC Results
 
-#### Compile Command
+<details>
+<summary><b>Compilation</b></summary>
+
 ```bash
-gcc -Wall -Wextra -o example1_gcc example1.c
+$ gcc -Wall -Wextra -o example1_gcc example1.c
 ```
+**Output**: ✅ No warnings (silent compilation)
 
-#### Compile Output
-```
-(No output - compilation successful with no warnings)
-```
+</details>
 
-### GCC Runtime
+<details>
+<summary><b>Runtime</b></summary>
 
-#### Run Command
 ```bash
-./example1_gcc
+$ ./example1_gcc
 ```
-
-#### Runtime Output
+**Output**:
 ```
 Segmentation fault (core dumped)
 ```
 
-### Zig CC Compilation
+</details>
 
-#### Compile Command
+### 🔨 Zig CC Results
+
+<details>
+<summary><b>Compilation</b></summary>
+
 ```bash
-zig cc -Wall -Wextra -o example1_zig example1.c
+$ zig cc -Wall -Wextra -o example1_zig example1.c
 ```
+**Output**: ✅ No warnings (silent compilation)
 
-#### Compile Output
-```
-(No output - compilation successful with no warnings)
-```
+</details>
 
-### Zig CC Runtime
+<details>
+<summary><b>Runtime</b></summary>
 
-#### Run Command
 ```bash
-./example1_zig
+$ ./example1_zig
 ```
-
-#### Runtime Output
+**Output**:
 ```
 thread 1249702 panic: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'
 /home/forest/Documents/git/zig-edu/example1.c:8:20: 0x1013510 in main (example1.c)
@@ -105,10 +128,11 @@ Unwind information for `libc.so.6:0x7fa61130c6b4` was not available, trace may b
 Aborted (core dumped)
 ```
 
-### Analysis
+</details>
 
-#### Key Differences
+### 📊 Analysis
 
+#### Key Differences:
 1. **Integer Overflow Detection:**
    - **GCC**: Silent overflow occurs, no runtime detection. The program continues with undefined behavior until hitting the segmentation fault from the array access.
    - **Zig CC**: Immediately detects and reports integer overflow with a clear panic message, showing the exact line and operation that caused the overflow.
@@ -125,18 +149,11 @@ Aborted (core dumped)
    - **GCC**: Students would need to use a debugger or add print statements to understand what went wrong.
    - **Zig CC**: Students immediately understand the problem from the error message, making it an excellent teaching tool for undefined behavior.
 
-## Summary
-
-Based on this initial test, `zig cc` shows significant promise for educational use:
-
-### Advantages for Students:
-1. **Clear Error Messages**: Zig CC provides explicit, actionable error messages that help students understand what went wrong.
-2. **Early Detection**: Runtime checks catch undefined behavior immediately, preventing confusion from silent errors.
-3. **Learning Tool**: The detailed error output teaches students about integer overflow and undefined behavior in C.
+---
 
 ## Example 2: Type Confusion/Incorrect Types
 
-### Source Code (example2.c)
+### 📝 Source Code (`example2.c`)
 ```c
 #include <stdio.h>
 #include <string.h>
@@ -173,9 +190,15 @@ int main() {
 }
 ```
 
-### GCC Compilation
+### 🔨 GCC Results
 
-#### Compile Output
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ gcc -Wall -Wextra -o example2_gcc example2.c
+```
+**Output**:
 ```
 example2.c: In function 'main':
 example2.c:7:32: warning: format '%s' expects argument of type 'char *', but argument 2 has type 'int' [-Wformat=]
@@ -199,14 +222,30 @@ example2.c:30:34: warning: format '%d' expects argument of type 'int', but argum
       |                                 %s
 ```
 
-#### GCC Runtime
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example2_gcc
+```
+**Output**:
 ```
 Segmentation fault (core dumped)
 ```
 
-### Zig CC Compilation
+</details>
 
-#### Compile Output
+### 🔨 Zig CC Results
+
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ zig cc -Wall -Wextra -o example2_zig example2.c
+```
+**Output**:
 ```
 example2.c:7:38: warning: format specifies type 'char *' but the argument has type 'int' [-Wformat]
     7 |     printf("Number as string: %s\n", number);  // Wrong: %s expects char*, not int
@@ -223,17 +262,29 @@ example2.c:30:40: warning: format specifies type 'int' but the argument has type
 3 warnings generated.
 ```
 
-#### Zig CC Runtime
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example2_zig
+```
+**Output**:
 ```
 Segmentation fault (core dumped)
 ```
 
-### Analysis
+</details>
+
+### 📊 Analysis
 Both compilers provide similar compile-time warnings for format string mismatches. The warnings are clear and helpful, showing the expected vs actual types. Neither compiler adds additional runtime protection for these type confusion errors.
+
+---
 
 ## Example 3: Null Pointer Dereference
 
-### Source Code (example3.c)
+### 📝 Source Code (`example3.c`)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -267,27 +318,53 @@ int main() {
 }
 ```
 
-### GCC Compilation
+### 🔨 GCC Results
 
-#### Compile Output
-```
-(No output - compilation successful with no warnings)
-```
+<details>
+<summary><b>Compilation</b></summary>
 
-#### GCC Runtime
+```bash
+$ gcc -Wall -Wextra -o example3_gcc example3.c
 ```
+**Output**: ✅ No warnings (silent compilation)
+
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example3_gcc
+```
+**Output**:
+```
+Attempting to dereference NULL pointer...
 Segmentation fault (core dumped)
 ```
 
-### Zig CC Compilation
+</details>
 
-#### Compile Output
-```
-(No output - compilation successful with no warnings)
-```
+### 🔨 Zig CC Results
 
-#### Zig CC Runtime
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ zig cc -Wall -Wextra -o example3_zig example3.c
 ```
+**Output**: ✅ No warnings (silent compilation)
+
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example3_zig
+```
+**Output**:
+```
+Attempting to dereference NULL pointer...
 thread 1254957 panic: load of null pointer of type 'int'
 /home/forest/Documents/git/zig-edu/example3.c:12:27: 0x1013544 in main (example3.c)
     printf("Value: %d\n", *ptr);  // This will crash
@@ -299,16 +376,20 @@ Unwind information for `libc.so.6:0x7f00a92a26b4` was not available, trace may b
 ???:?:?: 0x1013474 in ??? (???)
 ```
 
-### Analysis
+</details>
+
+### 📊 Analysis
 **Zig CC provides significantly better error messages for null pointer dereferences:**
 - **GCC**: Generic "Segmentation fault" with no details
 - **Zig CC**: Explicitly states "load of null pointer of type 'int'" with exact line and code snippet
 
 This makes debugging much easier for students who can immediately understand they're trying to access memory through a NULL pointer.
 
+---
+
 ## Example 4: Use After Free
 
-### Source Code (example4.c)
+### 📝 Source Code (`example4.c`)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -346,9 +427,15 @@ int main() {
 }
 ```
 
-### GCC Compilation
+### 🔨 GCC Results
 
-#### Compile Output
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ gcc -Wall -Wextra -o example4_gcc example4.c
+```
+**Output**:
 ```
 example4.c: In function 'main':
 example4.c:15:10: warning: pointer 'ptr' used after 'free' [-Wuse-after-free]
@@ -383,32 +470,65 @@ example4.c:28:5: note: call to 'free' here
       |     ^~~~~~~~~~~~
 ```
 
-#### GCC Runtime
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example4_gcc
 ```
+**Output**:
+```
+Value before free: 42
+Attempting to use after free...
+Value after free: 0
 free(): double free detected in tcache 2
+Aborted (core dumped)
 ```
 
-### Zig CC Compilation
+</details>
 
-#### Compile Output
-```
-(No output - compilation successful with no warnings)
-```
+### 🔨 Zig CC Results
 
-#### Zig CC Runtime
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ zig cc -Wall -Wextra -o example4_zig example4.c
 ```
+**Output**: ✅ No warnings (silent compilation)
+
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example4_zig
+```
+**Output**:
+```
+Value before free: 42
+Attempting to use after free...
+Value after free: 0
 free(): double free detected in tcache 2
+Aborted (core dumped)
 ```
 
-### Analysis
+</details>
+
+### 📊 Analysis
 - **GCC** provides excellent compile-time warnings for use-after-free errors, clearly identifying each problematic use and linking it to the corresponding free() call
 - **Zig CC** surprisingly doesn't warn about use-after-free at compile time
 - Both compilers rely on the standard library's runtime detection for double-free errors
 - Neither provides enhanced runtime detection for use-after-free access
 
+---
+
 ## Example 5: Uninitialized Variables
 
-### Source Code (example5.c)
+### 📝 Source Code (`example5.c`)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -459,9 +579,15 @@ int main() {
 }
 ```
 
-### GCC Compilation
+### 🔨 GCC Results
 
-#### Compile Output
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ gcc -Wall -Wextra -o example5_gcc example5.c
+```
+**Output**:
 ```
 example5.c: In function 'get_random_value':
 example5.c:6:12: warning: 'value' is used uninitialized [-Wuninitialized]
@@ -497,7 +623,15 @@ example5.c:39:9: note: 'flag' was declared here
       |         ^~~~
 ```
 
-#### GCC Runtime
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example5_gcc
+```
+**Output**:
 ```
 Uninitialized int x: 25
 Uninitialized pointer value: (nil)
@@ -522,9 +656,17 @@ Value from function: 32546
 Flag was false (zero)
 ```
 
-### Zig CC Compilation
+</details>
 
-#### Compile Output
+### 🔨 Zig CC Results
+
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ zig cc -Wall -Wextra -o example5_zig example5.c
+```
+**Output**:
 ```
 example5.c:6:12: warning: variable 'value' is uninitialized when used here [-Wuninitialized]
     6 |     return value;
@@ -564,7 +706,15 @@ example5.c:15:13: note: initialize the variable 'ptr' to silence this warning
 5 warnings generated.
 ```
 
-#### Zig CC Runtime
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example5_zig
+```
+**Output**:
 ```
 Uninitialized int x: 0
 Uninitialized pointer value: (nil)
@@ -589,11 +739,232 @@ Value from function: 0
 Flag was true (non-zero)
 ```
 
-### Analysis
+</details>
+
+### 📊 Analysis
 - Both compilers provide good compile-time warnings for uninitialized variables
 - **Zig CC** provides more helpful suggestions, explicitly showing how to fix each warning (e.g., "= 0" or "= NULL")
 - The runtime behavior differs slightly - uninitialized values may contain different garbage data
 - Neither compiler provides runtime detection for use of uninitialized variables
+
+---
+
+## Example 6: Complex Use-After-Free Patterns
+
+### 📝 Source Code (`example6.c`)
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Complex use-after-free scenarios that might evade simple detection
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function that frees memory through a pointer parameter
+void cleanup_node(struct Node** node) {
+    free(*node);
+    // *node = NULL;  // Good practice, but commented out to test detection
+}
+
+// Function that returns a freed pointer
+struct Node* get_freed_node() {
+    struct Node* temp = malloc(sizeof(struct Node));
+    temp->data = 999;
+    free(temp);
+    return temp;  // Returning freed memory
+}
+
+int main() {
+    // Example 1: Use after free through aliasing
+    printf("=== Example 1: Aliasing ===\n");
+    int* original = malloc(sizeof(int));
+    *original = 42;
+    int* alias = original;  // Create an alias
+    
+    free(original);
+    
+    printf("Using alias after original was freed: %d\n", *alias);  // Use after free via alias
+    *alias = 100;  // Write after free via alias
+    
+    // Example 2: Use after free through function parameter
+    printf("\n=== Example 2: Function Parameter ===\n");
+    struct Node* node = malloc(sizeof(struct Node));
+    node->data = 123;
+    struct Node* node_backup = node;  // Keep a copy
+    
+    cleanup_node(&node);
+    
+    printf("Accessing freed node: %d\n", node_backup->data);  // Use after free
+    
+    // Example 3: Use after free with function return
+    printf("\n=== Example 3: Function Return ===\n");
+    struct Node* freed_node = get_freed_node();
+    printf("Accessing returned freed memory: %d\n", freed_node->data);  // Use after free
+    
+    // Example 4: Use after free in a loop
+    printf("\n=== Example 4: Loop Scenario ===\n");
+    struct Node* list = NULL;
+    struct Node* current = NULL;
+    
+    // Create a small linked list
+    for (int i = 0; i < 3; i++) {
+        struct Node* new_node = malloc(sizeof(struct Node));
+        new_node->data = i;
+        new_node->next = list;
+        list = new_node;
+    }
+    
+    // Free all nodes but keep using them
+    current = list;
+    while (current != NULL) {
+        struct Node* next = current->next;
+        free(current);
+        printf("Freed node had data: %d\n", current->data);  // Use after free
+        current = next;
+    }
+    
+    // Example 5: Conditional use after free
+    printf("\n=== Example 5: Conditional ===\n");
+    int* ptr = malloc(sizeof(int));
+    *ptr = 777;
+    int should_free = 1;
+    
+    if (should_free) {
+        free(ptr);
+    }
+    
+    // Later in code, forgetting the conditional free
+    printf("Value: %d\n", *ptr);  // Use after free (conditional)
+    
+    return 0;
+}
+```
+
+### 🔨 GCC Results
+
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ gcc -Wall -Wextra -o example6_gcc example6.c
+```
+**Output**:
+```
+example6.c: In function 'get_freed_node':
+example6.c:23:12: warning: pointer 'temp' used after 'free' [-Wuse-after-free]
+   23 |     return temp;  // Returning freed memory
+      |            ^~~~
+example6.c:22:5: note: call to 'free' here
+   22 |     free(temp);
+      |     ^~~~~~~~~~
+example6.c: In function 'main':
+example6.c:36:12: warning: pointer 'alias' used after 'free' [-Wuse-after-free]
+   36 |     *alias = 100;  // Write after free via alias
+      |     ~~~~~~~^~~~~
+example6.c:33:5: note: call to 'free' here
+   33 |     free(original);
+      |     ^~~~~~~~~~~~~~
+example6.c:35:5: warning: pointer 'alias' used after 'free' [-Wuse-after-free]
+   35 |     printf("Using alias after original was freed: %d\n", *alias);  // Use after free via alias
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+example6.c:33:5: note: call to 'free' here
+   33 |     free(original);
+      |     ^~~~~~~~~~~~~~
+example6.c:71:9: warning: pointer 'current' used after 'free' [-Wuse-after-free]
+   71 |         printf("Freed node had data: %d\n", current->data);  // Use after free
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+example6.c:70:9: note: call to 'free' here
+   70 |         free(current);
+      |         ^~~~~~~~~~~~~
+```
+
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example6_gcc
+```
+**Output**:
+```
+=== Example 1: Aliasing ===
+Using alias after original was freed: 1569772249
+
+=== Example 2: Function Parameter ===
+Accessing freed node: 100
+
+=== Example 3: Function Return ===
+Accessing returned freed memory: 100
+
+=== Example 4: Loop Scenario ===
+Freed node had data: 100
+Freed node had data: 1354580009
+Freed node had data: 1354579977
+
+=== Example 5: Conditional ===
+Value: 1354579977
+```
+
+</details>
+
+### 🔨 Zig CC Results
+
+<details>
+<summary><b>Compilation</b></summary>
+
+```bash
+$ zig cc -Wall -Wextra -o example6_zig example6.c
+```
+**Output**: ✅ No warnings (silent compilation)
+
+</details>
+
+<details>
+<summary><b>Runtime</b></summary>
+
+```bash
+$ ./example6_zig
+```
+**Output**:
+```
+=== Example 1: Aliasing ===
+Using alias after original was freed: 251584
+
+=== Example 2: Function Parameter ===
+Accessing freed node: 100
+
+=== Example 3: Function Return ===
+Accessing returned freed memory: 100
+
+=== Example 4: Loop Scenario ===
+Freed node had data: 100
+Freed node had data: 1030738992
+Freed node had data: 1030738960
+
+=== Example 5: Conditional ===
+Value: 1030738960
+```
+
+</details>
+
+### 📊 Analysis
+
+**GCC demonstrates superior use-after-free detection:**
+- Detects use-after-free through **aliases** (Example 1)
+- Catches returning freed pointers from functions (Example 3)
+- Identifies use-after-free in loops (Example 4)
+- Does NOT detect:
+  - Use through copied pointers in different scopes (Example 2)
+  - Conditional use-after-free patterns (Example 5)
+
+**Zig CC provides no compile-time warnings** for any of these patterns, confirming that GCC has significantly better static analysis for use-after-free errors.
+
+---
 
 ## Overall Assessment
 

@@ -13,7 +13,7 @@ run-all: run-gcc-all run-zig-all
 # === GCC Commands ===
 
 # Compile all examples with gcc
-compile-gcc-all: compile-gcc-1 compile-gcc-2 compile-gcc-3 compile-gcc-4 compile-gcc-5
+compile-gcc-all: compile-gcc-1 compile-gcc-2 compile-gcc-3 compile-gcc-4 compile-gcc-5 compile-gcc-6
 
 # Compile individual examples with gcc
 compile-gcc-1:
@@ -31,8 +31,11 @@ compile-gcc-4:
 compile-gcc-5:
     gcc -Wall -Wextra -o example5_gcc example5.c 2>&1 || true
 
+compile-gcc-6:
+    gcc -Wall -Wextra -o example6_gcc example6.c 2>&1 || true
+
 # Run all gcc-compiled examples
-run-gcc-all: run-gcc-1 run-gcc-2 run-gcc-3 run-gcc-4 run-gcc-5
+run-gcc-all: run-gcc-1 run-gcc-2 run-gcc-3 run-gcc-4 run-gcc-5 run-gcc-6
 
 # Run individual gcc examples
 run-gcc-1:
@@ -50,10 +53,13 @@ run-gcc-4:
 run-gcc-5:
     ./example5_gcc 2>&1 || true
 
+run-gcc-6:
+    ./example6_gcc 2>&1 || true
+
 # === Zig CC Commands ===
 
 # Compile all examples with zig cc
-compile-zig-all: compile-zig-1 compile-zig-2 compile-zig-3 compile-zig-4 compile-zig-5
+compile-zig-all: compile-zig-1 compile-zig-2 compile-zig-3 compile-zig-4 compile-zig-5 compile-zig-6
 
 # Compile individual examples with zig cc
 compile-zig-1:
@@ -71,8 +77,11 @@ compile-zig-4:
 compile-zig-5:
     zig cc -Wall -Wextra -o example5_zig example5.c 2>&1 || true
 
+compile-zig-6:
+    zig cc -Wall -Wextra -o example6_zig example6.c 2>&1 || true
+
 # Run all zig-compiled examples
-run-zig-all: run-zig-1 run-zig-2 run-zig-3 run-zig-4 run-zig-5
+run-zig-all: run-zig-1 run-zig-2 run-zig-3 run-zig-4 run-zig-5 run-zig-6
 
 # Run individual zig examples
 run-zig-1:
@@ -89,6 +98,9 @@ run-zig-4:
 
 run-zig-5:
     ./example5_zig 2>&1 || true
+
+run-zig-6:
+    ./example6_zig 2>&1 || true
 
 # === Utility Commands ===
 
